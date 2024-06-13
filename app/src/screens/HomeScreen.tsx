@@ -1,28 +1,25 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import MainTemplate from '../components/templates/MainTemplate';
-import Card from '../components/molecules/Card';
 import SearchBar from '../components/atoms/SearchBar'; // Adjust the import path as necessary
-import { useNavigation } from '@react-navigation/native';
 import Text from '../components/atoms/Text';
 
+// Sample data for suggestions
+const suggestions = [
+  { name: "John Doe", academicYear: "2023", type: "Hostel", class: "10", section: "A", fathersName: "Mr. Doe" },
+  { name: "Jane Smith", academicYear: "2023", type: "Hostel", class: "10", section: "B", fathersName: "Mr. Smith" },
+  { name: "Sam Johnson", academicYear: "2023", type: "Hostel", class: "11", section: "A", fathersName: "Mr. Johnson" },
+  { name: "Chris Lee", academicYear: "2023", type: "Hostel", class: "12", section: "C", fathersName: "Mr. Lee" },
+  { name: "Patricia Brown", academicYear: "2023", type: "Hostel", class: "9", section: "D", fathersName: "Mr. Brown" }
+];
+
 const HomeScreen: React.FC = () => {
-  const navigation = useNavigation();
-
-  const handleSearchPress = (text: string) => {
-    // Here you can handle the search input
-    // For example, you could navigate to another screen with the search text
-    console.log('Search', `You searched for: ${text}`);
-    // Or use navigation to navigate to a search results screen
-    // navigation.navigate('SearchResultsScreen', { query: text });
-  };
-
   return (
     <MainTemplate username="Sam">
       <View style={styles.container}>
         <Text style={styles.title}>Search for a Student Name</Text>
-        <SearchBar onSearchPress={handleSearchPress} />
+        <SearchBar suggestions={suggestions} />
       </View>
     </MainTemplate>
   );
