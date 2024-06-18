@@ -1,10 +1,11 @@
-/* eslint-disable prettier/prettier */
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import MainTemplate from '../components/templates/MainTemplate';
 import SearchBar from '../components/atoms/SearchBar'; // Adjust the import path as necessary
 import Text from '../components/atoms/Text';
-
+import axios from 'axios';
+import { Student } from '../types';
+import { SEARCH_API } from '../api/GET';
 // Sample data for suggestions
 const suggestions = [
   { name: "John Doe", academicYear: "2023", type: "Hostel", class: "10", section: "A", fathersName: "Mr. Doe" },
@@ -15,11 +16,25 @@ const suggestions = [
 ];
 
 const HomeScreen: React.FC = () => {
+  const [userData, setUserData] = useState<Student []>([]);
+
+  const getRecommendations = async () => {
+    try {
+      const response = await axios.get(SEARCH_API,{
+        // TODO: Add params
+      });
+      const data: Student[] = response.data;
+      setUserData(data);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
+  };
+
   return (
     <MainTemplate username="Sam">
       <View style={styles.container}>
         <Text style={styles.title}>Search for a Student Name</Text>
-        <SearchBar suggestions={suggestions} />
+        <SearchBar suggestions={userData} />
       </View>
     </MainTemplate>
   );

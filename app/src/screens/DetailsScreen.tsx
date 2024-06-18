@@ -1,18 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../types'; // Adjust the path as necessary
+import { RootStackParamList, Student } from '../types'; // Adjust the path as necessary
 import MainTemplate from '../components/templates/MainTemplate';
+import axios from 'axios';
 
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
 
 type DetailsScreenProps = {
   route: DetailsScreenRouteProp;
 };
-
+const [student,setStudent]  = useState<Student|null>(null);
 const DetailsScreen: React.FC<DetailsScreenProps> = ({ route }) => {
   const { student } = route.params;
+  const getAUser = async ()  => {
+    try {
+      const response = await axios.get('GET_URL',
+        {
+          // TODO : Add params
+        }
+      );
+      const data: Student = response.data;
+      setStudent(data);
+    } catch (error) {
+      console.error("Error fetching data: ", error);
+    }
 
+  }
   return (
     <MainTemplate username='Sam'>
       <Text style={styles.label}>Student Name: {student.name}</Text>
