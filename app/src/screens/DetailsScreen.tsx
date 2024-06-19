@@ -1,40 +1,41 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList, Student } from '../types'; // Adjust the path as necessary
+import React from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList, Student } from '../types';
 import MainTemplate from '../components/templates/MainTemplate';
-import axios from 'axios';
 
 type DetailsScreenRouteProp = RouteProp<RootStackParamList, 'Details'>;
+type DetailsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Details'>;
 
 type DetailsScreenProps = {
   route: DetailsScreenRouteProp;
 };
-const [student,setStudent]  = useState<Student|null>(null);
+
 const DetailsScreen: React.FC<DetailsScreenProps> = ({ route }) => {
   const { student } = route.params;
-  const getAUser = async ()  => {
-    try {
-      const response = await axios.get('GET_URL',
-        {
-          // TODO : Add params
-        }
-      );
-      const data: Student = response.data;
-      setStudent(data);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
+  const navigation = useNavigation<DetailsScreenNavigationProp>();
 
-  }
+  const handleAllotHostel = () => {
+    navigation.navigate('Allocate', { student });
+  };
+
   return (
     <MainTemplate username='Sam'>
-      <Text style={styles.label}>Student Name: {student.name}</Text>
-      <Text style={styles.label}>Academic Year: {student.academicYear}</Text>
-      <Text style={styles.label}>Student Type: {student.type}</Text>
-      <Text style={styles.label}>Class: {student.class}</Text>
-      <Text style={styles.label}>Section: {student.section}</Text>
-      <Text style={styles.label}>Father's Name: {student.fathersName}</Text>
+      <View style={styles.container}>
+        <Text style={styles.label}>Student Name: {student.name}</Text>
+        <Text style={styles.label}>Academic Year: {student.academicYear}</Text>
+        <Text style={styles.label}>Student Type: {student.type}</Text>
+        <Text style={styles.label}>Class: {student.class}</Text>
+        <Text style={styles.label}>Section: {student.section}</Text>
+        <Text style={styles.label}>Father's Name: {student.fathersName}</Text>
+        {student.hostelName && (
+          <Text style={styles.label}>Hostel Name: {student.hostelName}</Text>
+        )}
+      </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Allot Hostel" onPress={handleAllotHostel} />
+      </View>
     </MainTemplate>
   );
 };
@@ -47,6 +48,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 18,
     marginVertical: 5,
+  },
+  buttonContainer: {
+    padding: 20,
   },
 });
 

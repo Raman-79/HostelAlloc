@@ -16,25 +16,25 @@ const suggestions = [
 ];
 
 const HomeScreen: React.FC = () => {
-  const [userData, setUserData] = useState<Student []>([]);
+  // const [userData, setUserData] = useState<Student []>([]);
 
-  const getRecommendations = async () => {
-    try {
-      const response = await axios.get(SEARCH_API,{
-        // TODO: Add params
-      });
-      const data: Student[] = response.data;
-      setUserData(data);
-    } catch (error) {
-      console.error("Error fetching data: ", error);
-    }
-  };
+  // const getRecommendations = async () => {
+  //   try {
+  //     const response = await axios.get(SEARCH_API,{
+  //       // TODO: Add params
+  //     });
+  //     const data: Student[] = response.data;
+  //     setUserData(data);
+  //   } catch (error) {
+  //     console.error("Error fetching data: ", error);
+  //   }
+  // };
 
   return (
     <MainTemplate username="Sam">
       <View style={styles.container}>
         <Text style={styles.title}>Search for a Student Name</Text>
-        <SearchBar suggestions={userData} />
+        <SearchBar suggestions={suggestions} />
       </View>
     </MainTemplate>
   );
