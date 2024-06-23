@@ -9,10 +9,12 @@ import { SEARCH_API } from '../api/GET';
 
 const HomeScreen: React.FC = () => {
   const [userData, setUserData] = useState<Student[]>([]);
+  const [error, setError] = useState<string | null>(null);
 
   const getRecommendations = async (searchQuery: string) => {
     if (!searchQuery) {
       setUserData([]);
+      setError(null);
       return;
     }
     try {
@@ -21,19 +23,24 @@ const HomeScreen: React.FC = () => {
       });
       const data = response.data.students; // Extract students array from response
       setUserData(data);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
+      setError(null);
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
         // Axios-specific error
-        if (error.response) {
-          console.error("Axios response data:", error.response.data);
-          console.error("Axios response status:", error.response.status);
-        } else if (error.request) {
-          console.error("Axios request:", error.request);
+        if (err.response) {
+          console.error("Axios response data:", err.response.data);
+          console.error("Axios response status:", err.response.status);
+          setError(`Error: No such student found` || `'Something went wrong.'`);
+        } else if (err.request) {
+          console.error("Axios request:", err.request);
+          setError('Error: No response received from server.');
         } else {
-          console.error("Axios error message:", error.message);
+          console.error("Axios error message:", err.message);
+          setError(`Error: ${err.message}`);
         }
       } else {
-        console.error("Unexpected error:", error);
+        console.error("Unexpected error:", err);
+        setError('Error: An unexpected error occurred.');
       }
       setUserData([]); // Clear userData on error
     }
@@ -48,6 +55,7 @@ const HomeScreen: React.FC = () => {
       <View style={styles.container}>
         <Text style={styles.title}>Search for a Student Name</Text>
         <SearchBar suggestions={userData} onSearch={handleSearch} />
+        {error && <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>}
       </View>
     </MainTemplate>
   );
@@ -58,11 +66,25 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
+    width: '100%',
   },
   title: {
     alignItems: 'center',
     padding: '5%',
     fontSize: 20,
+  },
+  errorBox: {
+    position: 'absolute',
+    bottom: 20,
+    backgroundColor: '#f8d7da',
+    borderRadius: 5,
+    padding: 10,
+    width: '90%',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: '#721c24',
+    textAlign: 'center',
   },
 });
 
