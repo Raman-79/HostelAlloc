@@ -6,6 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { RootStackParamList, Student } from '../types';
 import { GET_HOSTELS } from '../api/GET'; // Ensure this import path is correct
+import { ALLOCATE_HOSTEL } from '../api/PUT';
 
 type AllocateScreenRouteProp = RouteProp<RootStackParamList, 'Allocate'>;
 type AllocateScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Allocate'>;
@@ -36,9 +37,24 @@ const AllocateScreen: React.FC<AllocateScreenProps> = ({ route }) => {
     fetchHostels();
   }, []);
 
-  const handleConfirm = () => {
-    console.log(`Hostel ${selectedHostel} allocated to`, student.FirstName);
-    navigation.navigate('Details', { student: { ...student, hostelName: selectedHostel } });
+  const handleConfirm = async () => {
+    try {
+      const response = await axios.put(`${ALLOCATE_HOSTEL}`, {
+        studentId: student.ID,
+        hostelId: hostels.find(h => h.name === selectedHostel)?.id,
+        wardenName: 'Sam',  // Assuming 'Sam' is the wardenName
+        // ReportingTime is handled on the server side
+      });
+
+      const { allocation, ReportingDate } = response.data;
+
+      console.log(`${selectedHostel} allocated to`, student.FirstName, ` at ${ReportingDate}`);
+      navigation.navigate('Details', { student: { ...student, hostelName: selectedHostel } });
+
+    } catch (error) {
+      console.error('Failed to allocate hostel:', error);
+      // Handle error scenarios
+    }
   };
 
   return (
@@ -54,7 +70,7 @@ const AllocateScreen: React.FC<AllocateScreenProps> = ({ route }) => {
         ))}
       </Picker>
       <View style={styles.buttonContainer}>
-        <Button title="Confirm Allocation" onPress={handleConfirm} />
+        <Button title="Confirm" onPress={handleConfirm} />
       </View>
     </View>
   );
@@ -65,7 +81,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'space-evenly'
   },
   label: {
     fontSize: 18,
@@ -74,7 +90,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     height: 50,
-    width: '100%',
+    width: '90%',
     marginBottom: 20,
   },
   buttonContainer: {

@@ -107,14 +107,16 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   suggestionsContainer: {
-    width: '90%',
+    width: '85%',
     backgroundColor: '#fff',
+    marginTop: 2,
     borderWidth: 1,
     borderColor: '#ccc',
     borderTopWidth: 0,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
-    maxHeight: 150,
+    maxHeight: '75%',
+    padding: 5
   },
   suggestionItem: {
     padding: 10,
