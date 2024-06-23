@@ -1,33 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, FlatList, Text, TouchableWithoutFeedback, KeyboardAvoidingView, Platform } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
-import { RootStackParamList } from '../../types/index'; // Adjust the path as necessary
+import axios from 'axios';
+import { RootStackParamList, Student } from '../../types';
+import { GET_STUDENT } from '../../api/GET'; // Ensure this import path is correct
 
 interface SearchBarProps {
-  suggestions: Array<{ name: string, academicYear: string, type: string, class: string, section: string, fathersName: string }>;
+  suggestions: Student[];
+  onSearch: (text: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ suggestions }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ suggestions, onSearch }) => {
   const [input, setInput] = useState('');
-  const [filteredSuggestions, setFilteredSuggestions] = useState<typeof suggestions>([]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState<Student[]>([]);
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
-  const handleInputChange = (text: string) => {
-    setInput(text);
-    if (text.length > 0) {
+  useEffect(() => {
+    if (input.length > 0) {
       const filtered = suggestions.filter((suggestion) =>
-        suggestion.name.toLowerCase().includes(text.toLowerCase())
+        `${suggestion.FirstName} ${suggestion.LastName}`.toLowerCase().includes(input.toLowerCase())
       );
       setFilteredSuggestions(filtered);
     } else {
       setFilteredSuggestions([]);
     }
+  }, [input, suggestions]);
+
+  const handleInputChange = (text: string) => {
+    setInput(text);
+    onSearch(text);
   };
 
-  const handleSuggestionPress = (suggestion: typeof suggestions[0]) => {
-    setInput(suggestion.name);
+  const handleSuggestionPress = async (suggestion: Student) => {
+    setInput(`${suggestion.FirstName} ${suggestion.LastName}`);
     setFilteredSuggestions([]);
-    navigation.navigate('Details', { student: suggestion });
+    try {
+      const response = await axios.get(GET_STUDENT, { params: { id: suggestion.ID } });
+      const studentDetails = response.data.user;
+      console.log(studentDetails);
+      navigation.navigate('Details', { student: { 
+          ID: studentDetails.ID,
+          FirstName: studentDetails.FirstName,
+          LastName: studentDetails.LastName,
+          academicYear: studentDetails.AcademicYear,
+          type: studentDetails.StudentType,
+          class: studentDetails.Class,
+          section: studentDetails.SECTION,
+          fathersName: studentDetails.FatherName,
+          hostelName: studentDetails.HostelName
+      }});
+    } catch (error) {
+      console.error("Failed to fetch student details:", error);
+    }
   };
 
   return (
@@ -51,7 +75,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ suggestions }) => {
             renderItem={({ item }) => (
               <TouchableWithoutFeedback onPress={() => handleSuggestionPress(item)}>
                 <View style={styles.suggestionItem}>
-                  <Text>{item.name}</Text>
+                  <Text>{`${item.FirstName} ${item.LastName}`}</Text>
                 </View>
               </TouchableWithoutFeedback>
             )}
@@ -64,7 +88,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ suggestions }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%', // Make the container take full width
+    width: '100%',
     alignItems: 'center',
   },
   searchBar: {
@@ -74,7 +98,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 25,
     overflow: 'hidden',
-    width: '90%', // Set a fixed width for the search bar
+    width: '90%',
     marginTop: 20,
   },
   input: {
@@ -83,14 +107,14 @@ const styles = StyleSheet.create({
     paddingLeft: 20,
   },
   suggestionsContainer: {
-    width: '90%', // Ensure suggestions container matches the width of the search bar
+    width: '90%',
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ccc',
     borderTopWidth: 0,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
-    maxHeight: 150, // Limit the height of the suggestions container
+    maxHeight: 150,
   },
   suggestionItem: {
     padding: 10,

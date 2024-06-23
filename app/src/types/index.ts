@@ -7,7 +7,9 @@ export type RootStackParamList = {
 };
 
 export interface Student {
-  name: string;
+  ID: any;
+  FirstName: string;
+  LastName: string;
   academicYear: string;
   type: string;
   class: string;

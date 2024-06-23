@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
 import MainTemplate from '../components/templates/MainTemplate';
 import SearchBar from '../components/atoms/SearchBar'; // Adjust the import path as necessary
@@ -6,35 +6,48 @@ import Text from '../components/atoms/Text';
 import axios from 'axios';
 import { Student } from '../types';
 import { SEARCH_API } from '../api/GET';
-// Sample data for suggestions
-const suggestions = [
-  { name: "John Doe", academicYear: "2023", type: "Hostel", class: "10", section: "A", fathersName: "Mr. Doe" },
-  { name: "Jane Smith", academicYear: "2023", type: "Hostel", class: "10", section: "B", fathersName: "Mr. Smith" },
-  { name: "Sam Johnson", academicYear: "2023", type: "Hostel", class: "11", section: "A", fathersName: "Mr. Johnson" },
-  { name: "Chris Lee", academicYear: "2023", type: "Hostel", class: "12", section: "C", fathersName: "Mr. Lee" },
-  { name: "Patricia Brown", academicYear: "2023", type: "Hostel", class: "9", section: "D", fathersName: "Mr. Brown" }
-];
 
 const HomeScreen: React.FC = () => {
-  // const [userData, setUserData] = useState<Student []>([]);
+  const [userData, setUserData] = useState<Student[]>([]);
 
-  // const getRecommendations = async () => {
-  //   try {
-  //     const response = await axios.get(SEARCH_API,{
-  //       // TODO: Add params
-  //     });
-  //     const data: Student[] = response.data;
-  //     setUserData(data);
-  //   } catch (error) {
-  //     console.error("Error fetching data: ", error);
-  //   }
-  // };
+  const getRecommendations = async (searchQuery: string) => {
+    if (!searchQuery) {
+      setUserData([]);
+      return;
+    }
+    try {
+      const response = await axios.get(`${SEARCH_API}`, {
+        params: { name: searchQuery },
+      });
+      const data = response.data.students; // Extract students array from response
+      setUserData(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Axios-specific error
+        if (error.response) {
+          console.error("Axios response data:", error.response.data);
+          console.error("Axios response status:", error.response.status);
+        } else if (error.request) {
+          console.error("Axios request:", error.request);
+        } else {
+          console.error("Axios error message:", error.message);
+        }
+      } else {
+        console.error("Unexpected error:", error);
+      }
+      setUserData([]); // Clear userData on error
+    }
+  };
+
+  const handleSearch = useCallback((text: string) => {
+    getRecommendations(text);
+  }, []);
 
   return (
     <MainTemplate username="Sam">
       <View style={styles.container}>
         <Text style={styles.title}>Search for a Student Name</Text>
-        <SearchBar suggestions={suggestions} />
+        <SearchBar suggestions={userData} onSearch={handleSearch} />
       </View>
     </MainTemplate>
   );
@@ -49,8 +62,8 @@ const styles = StyleSheet.create({
   title: {
     alignItems: 'center',
     padding: '5%',
-    fontSize: 20
-  }
+    fontSize: 20,
+  },
 });
 
 export default HomeScreen;
