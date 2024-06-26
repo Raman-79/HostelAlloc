@@ -92,18 +92,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 25,
-    overflow: 'hidden',
     width: '90%',
     marginTop: 20,
   },
   input: {
-    flex: 1,
-    padding: 10,
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 25,
+    padding: 8,
     paddingLeft: 20,
   },
   suggestionsContainer: {
