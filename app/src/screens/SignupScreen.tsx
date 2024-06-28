@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
+import axios from 'axios';
 import { RootStackParamList } from '../types';
+import { SIGNUP } from '../api/POST';
+import { StackActions } from '@react-navigation/native';
 
 type Props = StackScreenProps<RootStackParamList, 'Signup'>;
 
@@ -11,10 +14,24 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [phone, setPhone] = useState('');
 
-  const handleSignup = () => {
-    // Handle signup logic
-    console.log('Signing up with', email, password, username, phone);
-    navigation.navigate('Home');
+  const handleSignup = async () => {
+    try {
+      const response = await axios.post(SIGNUP, {
+        email,
+        password,
+        phoneNumber: phone,
+        name: username
+      });
+      if (response.status === 201) {
+        console.log('User created successfully', response.data.name);
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Signup Failed', response.data.message);
+      }
+    } catch (error) {
+      console.error('Signup error', error);
+      Alert.alert('Signup Error', 'An error occurred during signup');
+    }
   };
 
   return (

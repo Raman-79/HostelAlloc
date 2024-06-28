@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
+import axios from 'axios';
 import { RootStackParamList } from '../types';
+import { LOGIN } from '../api/GET';
+import { StackActions } from '@react-navigation/native';
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>;
 
@@ -9,10 +12,21 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    // Handle login logic
-    console.log('Logging in with', email, password);
-    navigation.navigate('Home');
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get(LOGIN, {
+        params: {email, password}
+      });
+      if (response.status === 200) {
+        console.log('User logged in successfully', response.data.name);
+        navigation.navigate('Home');
+      } else {
+        Alert.alert('Login Failed', response.data.message);
+      }
+    } catch (error) {
+      console.error('Login error', error);
+      Alert.alert('Login Error', 'An error occurred during login');
+    }
   };
 
   return (
@@ -33,7 +47,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       />
       <Button title="Login" onPress={handleLogin} />
       <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={styles.link}>Don't have an account? Sign up</Text>
+        <Text style={styles.link}>Don't have an account? Sign Up</Text>
       </TouchableOpacity>
     </View>
   );
