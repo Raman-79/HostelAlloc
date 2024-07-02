@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { LOGIN } from '../api/GET';
-import { StackActions } from '@react-navigation/native';
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>;
 
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const LoginScreen: React.FC<Props> = ({ route, navigation }) => {
+  const { role } = route.params;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
     try {
       const response = await axios.get(LOGIN, {
-        params: {email, password}
+        params: { email, password }
       });
       if (response.status === 200) {
-        console.log('User logged in successfully', response.data.name);
-        navigation.navigate('Home');
+        const user = response.data.user;
+        const username = user.name;
+        const lastLogin = user.lastLogin;
+        if (role == 'user' && (lastLogin == null || lastLogin === 'Admin')) {
+          navigation.navigate('OTPChange', { email, username });
+        } else if (role === 'admin' && username === 'Admin') {
+          navigation.navigate('Admin');
+        } else {
+          navigation.navigate('Home', { role, username });
+        }
       } else {
         Alert.alert('Login Failed', response.data.message);
       }
@@ -31,24 +39,23 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
+      <Text style={styles.title}>Login as {role.charAt(0).toUpperCase() + role.slice(1)}</Text>
+      <View>
+        <TextInput
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+      </View>
       <Button title="Login" onPress={handleLogin} />
-      <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-        <Text style={styles.link}>Don't have an account? Sign Up</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -56,7 +63,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     padding: 16,
   },
   title: {
@@ -65,10 +72,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 12,
+    marginBottom: 30,
     padding: 8,
   },
   link: {

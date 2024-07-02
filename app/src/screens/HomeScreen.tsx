@@ -6,8 +6,13 @@ import Text from '../components/atoms/Text';
 import axios from 'axios';
 import { Student } from '../types';
 import { SEARCH_API } from '../api/GET';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from '../types';
 
-const HomeScreen: React.FC = () => {
+type Props = StackScreenProps<RootStackParamList, 'Home'>;
+
+const HomeScreen: React.FC<Props> = ({ route }) => {
+  const { role, username } = route.params;
   const [userData, setUserData] = useState<Student[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -51,7 +56,7 @@ const HomeScreen: React.FC = () => {
   }, []);
 
   return (
-    <MainTemplate username="Sam">
+    <MainTemplate username={username} role={role}>
       <View style={styles.container}>
         <Text style={styles.title}>Search for a Student Name</Text>
         <SearchBar suggestions={userData} onSearch={handleSearch} />

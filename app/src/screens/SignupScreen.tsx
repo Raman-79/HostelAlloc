@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import axios from 'axios';
 import { RootStackParamList } from '../types';
 import { SIGNUP } from '../api/POST';
-import { StackActions } from '@react-navigation/native';
 
 type Props = StackScreenProps<RootStackParamList, 'Signup'>;
 
@@ -20,11 +19,16 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
         email,
         password,
         phoneNumber: phone,
-        name: username
+        name: username,
       });
       if (response.status === 201) {
-        console.log('User created successfully', response.data.name);
-        navigation.navigate('Home');
+        const username = response.data.user.name;
+        Alert.alert('Signup Successful', 'New user created!', [
+          { text: 'OK', onPress: () => {} },
+        ]);
+        setTimeout(() => {
+          navigation.navigate('Admin');
+        }, 2000);
       } else {
         Alert.alert('Signup Failed', response.data.message);
       }
@@ -63,9 +67,6 @@ const SignupScreen: React.FC<Props> = ({ navigation }) => {
         secureTextEntry
       />
       <Button title="Sign Up" onPress={handleSignup} />
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.link}>Already have an account? Login</Text>
-      </TouchableOpacity>
     </View>
   );
 };

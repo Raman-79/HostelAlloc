@@ -1,11 +1,14 @@
 // src/types.ts
 
 export type RootStackParamList = {
-  Home: undefined;
+  Home: {role: string, username: string};
   Details: { student: Student };
   Allocate: { student: Student };
-  Login: undefined;
+  Login: {role: string};
   Signup: undefined;
+  RoleForLogin: undefined;
+  Admin: undefined;
+  OTPChange: {email: string, username: string};
 };
 
 export interface Student {
