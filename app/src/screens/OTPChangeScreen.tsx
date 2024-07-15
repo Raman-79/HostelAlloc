@@ -1,4 +1,3 @@
-// PasswordChangeScreen.tsx
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
@@ -12,7 +11,19 @@ const OTPChangeScreen: React.FC<Props> = ({ route, navigation }) => {
   const { email, username } = route.params;
   const [newPassword, setNewPassword] = useState('');
 
+  const validateInputs = () => {
+    if (!newPassword) {
+      Alert.alert('Validation Error', 'New Password is required');
+      return false;
+    }
+    return true;
+  };
+
   const handleChangePassword = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     try {
       const response = await axios.put(`${PASS_CHANGE}`, {
         email,
@@ -20,7 +31,7 @@ const OTPChangeScreen: React.FC<Props> = ({ route, navigation }) => {
       });
       if (response.status === 200) {
         Alert.alert('Password changed successfully');
-        navigation.navigate('Home', {role: 'user', username}); // Navigate to the home screen after password change
+        navigation.navigate('Home', { role: 'user', username }); // Navigate to the home screen after password change
       } else {
         Alert.alert('Password Change Failed', response.data.message);
       }

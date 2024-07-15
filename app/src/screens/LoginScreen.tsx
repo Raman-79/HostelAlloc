@@ -12,7 +12,23 @@ const LoginScreen: React.FC<Props> = ({ route, navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const validateInputs = () => {
+    if (!email) {
+      Alert.alert('Validation Error', 'Email is required');
+      return false;
+    }
+    if (!password) {
+      Alert.alert('Validation Error', 'Password is required');
+      return false;
+    }
+    return true;
+  };
+
   const handleLogin = async () => {
+    if (!validateInputs()) {
+      return;
+    }
+
     try {
       const response = await axios.get(LOGIN, {
         params: { email, password }

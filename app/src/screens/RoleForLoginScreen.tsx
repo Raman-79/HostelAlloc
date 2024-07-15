@@ -1,23 +1,31 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 
 type Props = StackScreenProps<RootStackParamList, 'RoleForLogin'>;
 
 const RoleForLoginScreen: React.FC<Props> = ({ navigation }) => {
+  const handleLogin = (role: string) => {
+    if (!role) {
+      Alert.alert('Error', 'Role is required to proceed');
+      return;
+    }
+    navigation.navigate('Login', { role });
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Who do you want to log in as?</Text>
       <TouchableOpacity 
         style={styles.button} 
-        onPress={() => navigation.navigate('Login', { role: 'admin' })}
+        onPress={() => handleLogin('admin')}
       >
         <Text style={styles.buttonText}>Login as Admin</Text>
       </TouchableOpacity>
       <TouchableOpacity 
         style={styles.button} 
-        onPress={() => navigation.navigate('Login', { role: 'user' })}
+        onPress={() => handleLogin('user')}
       >
         <Text style={styles.buttonText}>Login as User</Text>
       </TouchableOpacity>
