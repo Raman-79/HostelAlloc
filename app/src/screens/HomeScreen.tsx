@@ -24,7 +24,7 @@ const HomeScreen: React.FC<Props> = ({ route }) => {
     }
     try {
       const response = await axios.get(`${SEARCH_API}`, {
-        params: { name: searchQuery },
+        params: { name: searchQuery, role: role, username: username },
       });
       const data = response.data.students; // Extract students array from response
       setUserData(data);

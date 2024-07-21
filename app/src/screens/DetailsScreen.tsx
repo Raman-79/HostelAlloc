@@ -13,7 +13,7 @@ type DetailsScreenProps = {
 };
 
 const DetailsScreen: React.FC<DetailsScreenProps> = ({ route }) => {
-  const { student } = route.params;
+  const { student, role, username } = route.params;
   const navigation = useNavigation<DetailsScreenNavigationProp>();
 
   const handleAllotHostel = () => {
@@ -21,7 +21,7 @@ const DetailsScreen: React.FC<DetailsScreenProps> = ({ route }) => {
   };
 
   return (
-    <MainTemplate username='Sam'>
+    <MainTemplate>
       <View style={styles.container}>
         <Text style={styles.label}>Student Name: {student.FirstName + ' ' + student.LastName}</Text>
         <Text style={styles.label}>Academic Year: {student.academicYear || 'N/A'}</Text>

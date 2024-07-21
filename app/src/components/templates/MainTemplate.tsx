@@ -7,13 +7,13 @@ import { Colors } from '../../constants/colors';
 
 interface MainTemplateProps {
   children: React.ReactNode;
-  username: string;
-  role: string | '';
+  username?: string;
+  role?: string | '';
 }
 
 const MainTemplate: React.FC<MainTemplateProps> = ({ children, username, role }) => (
   <View style={styles.container}>
-    <Header title={`Welcome, ${username} (${role})`} textStyle={{color: 'black'}}/>
+    <Header title={`Welcome`} textStyle={{color: 'black'}}/>
     <View style={styles.content}>
       {children}
     </View>

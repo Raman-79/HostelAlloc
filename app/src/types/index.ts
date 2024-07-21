@@ -2,7 +2,7 @@
 
 export type RootStackParamList = {
   Home: {role: string, username: string};
-  Details: { student: Student };
+  Details: { student: Student, role: string, username: string};
   Allocate: { student: Student };
   Login: {role: string};
   Signup: undefined;
